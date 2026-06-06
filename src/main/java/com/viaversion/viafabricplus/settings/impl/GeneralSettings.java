@@ -47,6 +47,7 @@ public final class GeneralSettings extends SettingGroup {
         Component.translatable("base.viafabricplus.vanilla_only"),
         Component.translatable("base.viafabricplus.off")
     );
+    public final BooleanSetting enableViaFabricPlus = new BooleanSetting(this, Component.translatable("general_settings.viafabricplus.enable_viafabricplus"), true);
     public final BooleanSetting saveSelectedProtocolVersion = new BooleanSetting(this, Component.translatable("general_settings.viafabricplus.save_selected_protocol_version"), true);
     public final BooleanSetting showClassicLoadingProgressInConnectScreen = new BooleanSetting(this, Component.translatable("general_settings.viafabricplus.show_classic_loading_progress"), true);
     public final BooleanSetting showAdvertisedServerVersion = new BooleanSetting(this, Component.translatable("general_settings.viafabricplus.show_advertised_server_version"), true);

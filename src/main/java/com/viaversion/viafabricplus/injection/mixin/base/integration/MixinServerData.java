@@ -45,6 +45,9 @@ public abstract class MixinServerData implements IServerData {
     private ProtocolVersion viaFabricPlus$forcedVersion = null;
 
     @Unique
+    private boolean viaFabricPlus$excludedFromViaFabricPlus;
+
+    @Unique
     private boolean viaFabricPlus$passedDirectConnectScreen;
 
     @Unique
@@ -55,21 +58,28 @@ public abstract class MixinServerData implements IServerData {
         if (viaFabricPlus$forcedVersion != null) {
             nbtCompound.putString("viafabricplus_forcedversion", viaFabricPlus$forcedVersion.getName());
         }
+        if (viaFabricPlus$excludedFromViaFabricPlus) {
+            nbtCompound.putBoolean("viafabricplus_excluded", true);
+        }
     }
 
     @Inject(method = "read", at = @At("TAIL"))
     private static void loadForcedVersion(CompoundTag root, CallbackInfoReturnable<ServerData> cir, @Local ServerData serverInfo) {
+        final IServerData mixinServerInfo = (IServerData) serverInfo;
         if (root.contains("viafabricplus_forcedversion")) {
             final ProtocolVersion version = SettingsSave.protocolVersionByName(root.getStringOr("viafabricplus_forcedversion", null));
             if (version != null) {
-                ((IServerData) serverInfo).viaFabricPlus$forceVersion(version);
+                mixinServerInfo.viaFabricPlus$forceVersion(version);
             }
         }
+        mixinServerInfo.viaFabricPlus$excludeFromViaFabricPlus(root.getBooleanOr("viafabricplus_excluded", false));
     }
 
     @Inject(method = "copyNameIconFrom", at = @At("RETURN"))
     private void syncForcedVersion(ServerData serverInfo, CallbackInfo ci) {
-        viaFabricPlus$forceVersion(((IServerData) serverInfo).viaFabricPlus$forcedVersion());
+        final IServerData mixinServerInfo = (IServerData) serverInfo;
+        viaFabricPlus$forceVersion(mixinServerInfo.viaFabricPlus$forcedVersion());
+        viaFabricPlus$excludeFromViaFabricPlus(mixinServerInfo.viaFabricPlus$excludedFromViaFabricPlus());
     }
 
     @Override
@@ -80,6 +90,16 @@ public abstract class MixinServerData implements IServerData {
     @Override
     public void viaFabricPlus$forceVersion(ProtocolVersion version) {
         viaFabricPlus$forcedVersion = version;
+    }
+
+    @Override
+    public boolean viaFabricPlus$excludedFromViaFabricPlus() {
+        return viaFabricPlus$excludedFromViaFabricPlus;
+    }
+
+    @Override
+    public void viaFabricPlus$excludeFromViaFabricPlus(boolean excluded) {
+        viaFabricPlus$excludedFromViaFabricPlus = excluded;
     }
 
     @Override

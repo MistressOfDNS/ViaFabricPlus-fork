@@ -90,6 +90,11 @@ public abstract class MixinManageServerScreen extends Screen {
         }).size(98, 20);
         GeneralSettings.setOrientation(buttonBuilder::pos, buttonPosition, width, height);
         this.addRenderableWidget(buttonBuilder.build());
+
+        this.addRenderableWidget(Button.builder(Component.translatable(mixinServerInfo.viaFabricPlus$excludedFromViaFabricPlus() ? "base.viafabricplus.excluded" : "base.viafabricplus.exclude"), button -> {
+            mixinServerInfo.viaFabricPlus$excludeFromViaFabricPlus(!mixinServerInfo.viaFabricPlus$excludedFromViaFabricPlus());
+            this.rebuildWidgets();
+        }).pos(width / 2 - 49, height - 28).size(98, 20).build());
     }
 
 }
