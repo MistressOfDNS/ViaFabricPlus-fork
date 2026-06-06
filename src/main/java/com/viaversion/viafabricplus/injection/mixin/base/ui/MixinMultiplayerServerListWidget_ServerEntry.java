@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.viaversion.viafabricplus.injection.access.base.IServerInfo;
+import com.viaversion.viafabricplus.protocoltranslator.ProtocolTranslator;
 import com.viaversion.viafabricplus.settings.impl.GeneralSettings;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public abstract class MixinMultiplayerServerListWidget_ServerEntry {
         tooltips.add(text);
         if (GeneralSettings.INSTANCE.showAdvertisedServerVersion.getValue()) {
             final ProtocolVersion version = ((IServerInfo) server).viaFabricPlus$translatingVersion();
-            if (version != null) {
+            if (version != null && !version.equals(ProtocolTranslator.NATIVE_VERSION)) {
                 tooltips.add(Text.translatable("base.viafabricplus.via_translates_to", version.getName() + " (" + version.getOriginalVersion() + ")"));
                 tooltips.add(Text.translatable("base.viafabricplus.server_version", server.version.getString() + " (" + server.protocolVersion + ")"));
             }

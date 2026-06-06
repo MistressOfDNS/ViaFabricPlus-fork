@@ -25,6 +25,8 @@ import com.viaversion.viafabricplus.protocoltranslator.ProtocolTranslator;
 import com.viaversion.viafabricplus.screen.VFPList;
 import com.viaversion.viafabricplus.screen.VFPListEntry;
 import com.viaversion.viafabricplus.screen.VFPScreen;
+import com.viaversion.viafabricplus.screen.impl.settings.SettingsScreen;
+import com.viaversion.viafabricplus.settings.impl.GeneralSettings;
 import com.viaversion.vialoader.util.ProtocolVersionList;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import java.awt.*;
@@ -53,10 +55,19 @@ public final class ProtocolSelectionScreen extends VFPScreen {
                 .position(5, height - 25).size(98, 20).build());
         serverList.active = MinecraftClient.getInstance().getNetworkHandler() == null;
 
+        this.addDrawableChild(ButtonWidget.builder(getEnabledButtonText(), button -> {
+            GeneralSettings.INSTANCE.enableViaFabricPlus.setValue(!GeneralSettings.INSTANCE.enableViaFabricPlus.getValue());
+            this.clearAndInit();
+        }).position(width / 2 - 60, height - 25).size(120, 20).build());
+
         this.addDrawableChild(ButtonWidget.builder(Text.translatable("report.viafabricplus.button"), button -> ReportIssuesScreen.INSTANCE.open(this))
                 .position(width - 98 - 5, height - 25).size(98, 20).build());
 
         super.init();
+    }
+
+    private static Text getEnabledButtonText() {
+        return GeneralSettings.INSTANCE.enableViaFabricPlus.getValue() ? Text.translatable("base.viafabricplus.enabled") : Text.translatable("base.viafabricplus.disabled");
     }
 
     public static class SlotList extends VFPList {
@@ -101,7 +112,7 @@ public final class ProtocolSelectionScreen extends VFPScreen {
 
         @Override
         public void render(final DrawContext context, final int mouseX, final int mouseY, final boolean hovered, final float deltaTicks) {
-            final boolean isSelected = ProtocolTranslator.getTargetVersion().equals(protocolVersion);
+            final boolean isSelected = ProtocolTranslator.getSelectedTargetVersion().equals(protocolVersion);
 
             Color color = isSelected ? Color.GREEN : Color.RED;
             if (MinecraftClient.getInstance().getNetworkHandler() != null) {
