@@ -37,6 +37,7 @@ import com.viaversion.viafabricplus.protocoltranslator.netty.NoReadFlowControlHa
 import com.viaversion.viafabricplus.protocoltranslator.netty.ViaFabricPlusDecoder;
 import com.viaversion.viafabricplus.protocoltranslator.protocol.ViaFabricPlusProtocol;
 import com.viaversion.viafabricplus.protocoltranslator.util.NoPacketSendChannel;
+import com.viaversion.viafabricplus.settings.impl.GeneralSettings;
 import com.viaversion.viaversion.ViaManagerImpl;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.ProtocolInfo;
@@ -153,6 +154,10 @@ public final class ProtocolTranslator {
         channel.attr(ProtocolTranslator.CLIENT_CONNECTION_ATTRIBUTE_KEY).set(connection);
         channel.attr(ProtocolTranslator.TARGET_VERSION_ATTRIBUTE_KEY).set(serverVersion);
 
+        if (serverVersion.equals(NATIVE_VERSION)) {
+            return;
+        }
+
         if (serverVersion.equals(BedrockProtocolVersion.bedrockLatest)) {
             final ChannelConfig config = channel.config();
             // RakNet config
@@ -196,6 +201,13 @@ public final class ProtocolTranslator {
     }
 
     public static ProtocolVersion getTargetVersion() {
+        if (!GeneralSettings.INSTANCE.enableViaFabricPlus.getValue()) {
+            return NATIVE_VERSION;
+        }
+        return getSelectedTargetVersion();
+    }
+
+    public static ProtocolVersion getSelectedTargetVersion() {
         return targetVersion;
     }
 

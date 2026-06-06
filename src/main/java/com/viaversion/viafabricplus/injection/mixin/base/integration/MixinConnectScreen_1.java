@@ -29,6 +29,7 @@ import com.viaversion.viafabricplus.protocoltranslator.impl.provider.vialegacy.V
 import com.viaversion.viafabricplus.protocoltranslator.util.ProtocolVersionDetector;
 import com.viaversion.viafabricplus.save.SaveManager;
 import com.viaversion.viafabricplus.settings.impl.AuthenticationSettings;
+import com.viaversion.viafabricplus.settings.impl.GeneralSettings;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import de.florianreuth.classic4j.model.classicube.account.CCAccount;
 import io.netty.channel.ChannelFuture;
@@ -73,6 +74,13 @@ public abstract class MixinConnectScreen_1 {
         final IServerData mixinServerInfo = (IServerData) this.val$server;
 
         ProtocolVersion targetVersion = ProtocolTranslator.getTargetVersion();
+        if (!GeneralSettings.INSTANCE.enableViaFabricPlus.getValue()) {
+            return address;
+        }
+        if (mixinServerInfo.viaFabricPlus$excludedFromViaFabricPlus()) {
+            ProtocolTranslator.setTargetVersion(ProtocolTranslator.NATIVE_VERSION, true);
+            return address;
+        }
         if (mixinServerInfo.viaFabricPlus$forcedVersion() != null && !mixinServerInfo.viaFabricPlus$passedDirectConnectScreen()) {
             targetVersion = mixinServerInfo.viaFabricPlus$forcedVersion();
             mixinServerInfo.viaFabricPlus$passDirectConnectScreen(false); // reset state

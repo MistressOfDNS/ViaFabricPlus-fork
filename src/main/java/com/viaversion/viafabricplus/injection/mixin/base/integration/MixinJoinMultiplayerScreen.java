@@ -48,7 +48,9 @@ public abstract class MixinJoinMultiplayerScreen extends Screen {
         final IServerData mixinServerInfo = (IServerData) entry;
 
         ProtocolVersion version;
-        if (mixinServerInfo.viaFabricPlus$passedDirectConnectScreen()) {
+        if (mixinServerInfo.viaFabricPlus$excludedFromViaFabricPlus()) {
+            version = ProtocolTranslator.NATIVE_VERSION;
+        } else if (mixinServerInfo.viaFabricPlus$passedDirectConnectScreen()) {
             version = ProtocolTranslator.getTargetVersion();
         } else {
             version = mixinServerInfo.viaFabricPlus$forcedVersion();

@@ -29,6 +29,10 @@ public interface IServerData {
 
     void viaFabricPlus$forceVersion(final ProtocolVersion version);
 
+    boolean viaFabricPlus$excludedFromViaFabricPlus();
+
+    void viaFabricPlus$excludeFromViaFabricPlus(final boolean excluded);
+
     boolean viaFabricPlus$passedDirectConnectScreen();
 
     void viaFabricPlus$passDirectConnectScreen(final boolean state);
