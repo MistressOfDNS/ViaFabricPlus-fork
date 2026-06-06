@@ -91,6 +91,11 @@ public abstract class MixinAddServerScreen extends Screen {
 
         // Set the button's position according to the configured orientation and add the button to the screen
         this.addDrawableChild(GeneralSettings.withOrientation(buttonBuilder, buttonPosition, width, height).build());
+
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable(mixinServerInfo.viaFabricPlus$excludedFromViaFabricPlus() ? "base.viafabricplus.excluded" : "base.viafabricplus.exclude"), button -> {
+            mixinServerInfo.viaFabricPlus$excludeFromViaFabricPlus(!mixinServerInfo.viaFabricPlus$excludedFromViaFabricPlus());
+            this.clearAndInit();
+        }).position(width / 2 - 49, height - 28).size(98, 20).build());
     }
 
 }
