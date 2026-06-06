@@ -35,6 +35,7 @@ import com.viaversion.viafabricplus.protocoltranslator.impl.viaversion.ViaFabric
 import com.viaversion.viafabricplus.protocoltranslator.netty.ViaFabricPlusVLLegacyPipeline;
 import com.viaversion.viafabricplus.protocoltranslator.protocol.ViaFabricPlusProtocol;
 import com.viaversion.viafabricplus.protocoltranslator.util.NoPacketSendChannel;
+import com.viaversion.viafabricplus.settings.impl.GeneralSettings;
 import com.viaversion.vialoader.ViaLoader;
 import com.viaversion.vialoader.impl.platform.ViaAprilFoolsPlatformImpl;
 import com.viaversion.vialoader.impl.platform.ViaBackwardsPlatformImpl;
@@ -136,29 +137,38 @@ public final class ProtocolTranslator {
         final IClientConnection mixinClientConnection = (IClientConnection) connection;
         final ProtocolVersion serverVersion = mixinClientConnection.viaFabricPlus$getTargetVersion();
 
-        if (serverVersion != ProtocolTranslator.NATIVE_VERSION) {
-            channel.attr(ProtocolTranslator.CLIENT_CONNECTION_ATTRIBUTE_KEY).set(connection);
-            channel.attr(ProtocolTranslator.TARGET_VERSION_ATTRIBUTE_KEY).set(serverVersion);
+        channel.attr(ProtocolTranslator.CLIENT_CONNECTION_ATTRIBUTE_KEY).set(connection);
+        channel.attr(ProtocolTranslator.TARGET_VERSION_ATTRIBUTE_KEY).set(serverVersion);
 
-            if (serverVersion.equals(BedrockProtocolVersion.bedrockLatest)) {
-                channel.config().setOption(RakChannelOption.RAK_PROTOCOL_VERSION, ProtocolConstants.BEDROCK_RAKNET_PROTOCOL_VERSION);
-                channel.config().setOption(RakChannelOption.RAK_COMPATIBILITY_MODE, true);
-                channel.config().setOption(RakChannelOption.RAK_CLIENT_INTERNAL_ADDRESSES, 20);
-                channel.config().setOption(RakChannelOption.RAK_TIME_BETWEEN_SEND_CONNECTION_ATTEMPTS_MS, 500);
-                channel.config().setOption(RakChannelOption.RAK_CONNECT_TIMEOUT, channel.config().getOption(ChannelOption.CONNECT_TIMEOUT_MILLIS).longValue());
-                channel.config().setOption(RakChannelOption.RAK_SESSION_TIMEOUT, 30_000L);
-                channel.config().setOption(RakChannelOption.RAK_GUID, ThreadLocalRandom.current().nextLong());
-            }
-
-            final UserConnection user = new UserConnectionImpl(channel, true);
-            new ProtocolPipelineImpl(user);
-            mixinClientConnection.viaFabricPlus$setUserConnection(user);
-
-            channel.pipeline().addLast(new ViaFabricPlusVLLegacyPipeline(user, serverVersion));
+        if (serverVersion.equals(NATIVE_VERSION)) {
+            return;
         }
+
+        if (serverVersion.equals(BedrockProtocolVersion.bedrockLatest)) {
+            channel.config().setOption(RakChannelOption.RAK_PROTOCOL_VERSION, ProtocolConstants.BEDROCK_RAKNET_PROTOCOL_VERSION);
+            channel.config().setOption(RakChannelOption.RAK_COMPATIBILITY_MODE, true);
+            channel.config().setOption(RakChannelOption.RAK_CLIENT_INTERNAL_ADDRESSES, 20);
+            channel.config().setOption(RakChannelOption.RAK_TIME_BETWEEN_SEND_CONNECTION_ATTEMPTS_MS, 500);
+            channel.config().setOption(RakChannelOption.RAK_CONNECT_TIMEOUT, channel.config().getOption(ChannelOption.CONNECT_TIMEOUT_MILLIS).longValue());
+            channel.config().setOption(RakChannelOption.RAK_SESSION_TIMEOUT, 30_000L);
+            channel.config().setOption(RakChannelOption.RAK_GUID, ThreadLocalRandom.current().nextLong());
+        }
+
+        final UserConnection user = new UserConnectionImpl(channel, true);
+        new ProtocolPipelineImpl(user);
+        mixinClientConnection.viaFabricPlus$setUserConnection(user);
+
+        channel.pipeline().addLast(new ViaFabricPlusVLLegacyPipeline(user, serverVersion));
     }
 
     public static ProtocolVersion getTargetVersion() {
+        if (!GeneralSettings.INSTANCE.enableViaFabricPlus.getValue()) {
+            return NATIVE_VERSION;
+        }
+        return getSelectedTargetVersion();
+    }
+
+    public static ProtocolVersion getSelectedTargetVersion() {
         return targetVersion;
     }
 
