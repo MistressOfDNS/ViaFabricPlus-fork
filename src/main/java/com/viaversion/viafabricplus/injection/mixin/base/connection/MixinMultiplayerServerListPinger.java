@@ -26,6 +26,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.viaversion.viafabricplus.injection.access.base.IMultiValueDebugSampleLogImpl;
 import com.viaversion.viafabricplus.injection.access.base.IServerInfo;
+import com.viaversion.viafabricplus.protocoltranslator.ProtocolTranslator;
+import com.viaversion.viafabricplus.settings.impl.GeneralSettings;
 import java.net.InetSocketAddress;
 import net.minecraft.client.network.MultiplayerServerListPinger;
 import net.minecraft.client.network.ServerInfo;
@@ -41,7 +43,12 @@ public final class MixinMultiplayerServerListPinger {
     private ClientConnection setForcedVersion(InetSocketAddress address, boolean useEpoll, MultiValueDebugSampleLogImpl packetSizeLog, Operation<ClientConnection> original, @Local(argsOnly = true) ServerInfo serverInfo) {
         final IServerInfo mixinServerInfo = (IServerInfo) serverInfo;
 
-        if (mixinServerInfo.viaFabricPlus$forcedVersion() != null && !mixinServerInfo.viaFabricPlus$passedDirectConnectScreen()) {
+        if (!GeneralSettings.INSTANCE.enableViaFabricPlus.getValue() || mixinServerInfo.viaFabricPlus$excludedFromViaFabricPlus()) {
+            if (packetSizeLog == null) {
+                packetSizeLog = new MultiValueDebugSampleLogImpl(1);
+            }
+            ((IMultiValueDebugSampleLogImpl) packetSizeLog).viaFabricPlus$setForcedVersion(ProtocolTranslator.NATIVE_VERSION);
+        } else if (mixinServerInfo.viaFabricPlus$forcedVersion() != null && !mixinServerInfo.viaFabricPlus$passedDirectConnectScreen()) {
             // We use the PerformanceLog field to store the forced version since it's always null when pinging a server
             // So we can create a dummy instance, store the forced version in it and later destroy the instance again
             // To avoid any side effects, we also support cases where a mod is also creating a PerformanceLog instance
