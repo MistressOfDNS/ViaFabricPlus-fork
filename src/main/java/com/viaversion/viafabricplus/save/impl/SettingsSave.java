@@ -44,7 +44,7 @@ public final class SettingsSave extends AbstractSave {
     public void write(JsonObject object) {
         writeSettings(object);
 
-        object.addProperty("selected-protocol-version", ProtocolTranslator.getTargetVersion().getName());
+        object.addProperty("selected-protocol-version", ProtocolTranslator.getSelectedTargetVersion().getName());
     }
 
     public void writeSettings(final JsonObject object) {

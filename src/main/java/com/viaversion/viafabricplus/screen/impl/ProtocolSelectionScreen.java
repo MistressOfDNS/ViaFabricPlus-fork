@@ -25,6 +25,7 @@ import com.viaversion.viafabricplus.protocoltranslator.ProtocolTranslator;
 import com.viaversion.viafabricplus.screen.VFPList;
 import com.viaversion.viafabricplus.screen.VFPListEntry;
 import com.viaversion.viafabricplus.screen.VFPScreen;
+import com.viaversion.viafabricplus.settings.impl.GeneralSettings;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import java.awt.*;
 import net.minecraft.client.Minecraft;
@@ -52,10 +53,19 @@ public final class ProtocolSelectionScreen extends VFPScreen {
             .pos(5, height - 25).size(98, 20).build());
         serverList.active = Minecraft.getInstance().getConnection() == null;
 
+        this.addRenderableWidget(Button.builder(getEnabledButtonText(), button -> {
+            GeneralSettings.INSTANCE.enableViaFabricPlus.setValue(!GeneralSettings.INSTANCE.enableViaFabricPlus.getValue());
+            this.rebuildWidgets();
+        }).pos(width / 2 - 60, height - 25).size(120, 20).build());
+
         this.addRenderableWidget(Button.builder(Component.translatable("report.viafabricplus.button"), button -> ReportIssuesScreen.INSTANCE.open(this))
             .pos(width - 98 - 5, height - 25).size(98, 20).build());
 
         super.init();
+    }
+
+    private static Component getEnabledButtonText() {
+        return GeneralSettings.INSTANCE.enableViaFabricPlus.getValue() ? Component.translatable("base.viafabricplus.enabled") : Component.translatable("base.viafabricplus.disabled");
     }
 
     public static class SlotList extends VFPList {
@@ -100,7 +110,7 @@ public final class ProtocolSelectionScreen extends VFPScreen {
 
         @Override
         public void extractContent(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final boolean hovered, final float deltaTicks) {
-            final boolean isSelected = ProtocolTranslator.getTargetVersion().equals(protocolVersion);
+            final boolean isSelected = ProtocolTranslator.getSelectedTargetVersion().equals(protocolVersion);
 
             Color color = isSelected ? Color.GREEN : Color.RED;
             if (Minecraft.getInstance().getConnection() != null) {
