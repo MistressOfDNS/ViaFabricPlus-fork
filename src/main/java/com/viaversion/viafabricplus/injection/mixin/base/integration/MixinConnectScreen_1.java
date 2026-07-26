@@ -81,7 +81,7 @@ public abstract class MixinConnectScreen_1 {
             ProtocolTranslator.setTargetVersion(ProtocolTranslator.NATIVE_VERSION, true);
             return address;
         }
-        if (mixinServerInfo.viaFabricPlus$forcedVersion() != null && !mixinServerInfo.viaFabricPlus$passedDirectConnectScreen()) {
+        if (mixinServerInfo.viaFabricPlus$forcedVersion() != null) {
             targetVersion = mixinServerInfo.viaFabricPlus$forcedVersion();
             mixinServerInfo.viaFabricPlus$passDirectConnectScreen(false); // reset state
         }

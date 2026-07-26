@@ -22,6 +22,7 @@
 package com.viaversion.viafabricplus.injection.mixin.base.integration;
 
 import com.viaversion.viafabricplus.ViaFabricPlusImpl;
+import com.viaversion.viafabricplus.injection.access.base.IConnection;
 import com.viaversion.viafabricplus.settings.impl.DebugSettings;
 import com.viaversion.viaversion.platform.ViaChannelInitializer;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,6 +30,7 @@ import java.net.ConnectException;
 import java.net.SocketException;
 import io.netty.channel.SimpleChannelInboundHandler;
 import net.minecraft.network.Connection;
+import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.HandlerNames;
 import net.minecraft.network.protocol.Packet;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,6 +40,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Connection.class)
 public abstract class MixinConnection extends SimpleChannelInboundHandler<Packet<?>> {
+
+    @Inject(method = "disconnect(Lnet/minecraft/network/DisconnectionDetails;)V", at = @At("HEAD"))
+    private void logDisconnectReason(final DisconnectionDetails details, final CallbackInfo ci) {
+        ViaFabricPlusImpl.INSTANCE.getLogger().info("Disconnecting from server while targeting {}: {}", ((IConnection) this).viaFabricPlus$getTargetVersion(), details.reason().getString());
+    }
 
     @Inject(method = "exceptionCaught", at = @At("HEAD"))
     private void printNetworkingErrors(ChannelHandlerContext context, Throwable ex, CallbackInfo ci) {

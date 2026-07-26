@@ -27,6 +27,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.viaversion.viaaprilfools.ViaAprilFoolsPlatformImpl;
 import com.viaversion.viabackwards.ViaBackwardsPlatformImpl;
+import com.viaversion.viafabricplus.ViaFabricPlusImpl;
 import com.viaversion.viafabricplus.base.Events;
 import com.viaversion.viafabricplus.injection.access.base.IConnection;
 import com.viaversion.viafabricplus.protocoltranslator.impl.command.ViaFabricPlusCommandHandler;
@@ -155,8 +156,12 @@ public final class ProtocolTranslator {
         channel.attr(ProtocolTranslator.TARGET_VERSION_ATTRIBUTE_KEY).set(serverVersion);
 
         if (serverVersion.equals(NATIVE_VERSION)) {
+            ViaFabricPlusImpl.INSTANCE.getLogger().info("Skipping ViaFabricPlus pipeline for native target {}", serverVersion);
             return;
         }
+
+        final List<ProtocolPathEntry> protocolPath = Via.getManager().getProtocolManager().getProtocolPath(NATIVE_VERSION, serverVersion);
+        ViaFabricPlusImpl.INSTANCE.getLogger().info("Injecting ViaFabricPlus pipeline: native={} target={} path={}", NATIVE_VERSION, serverVersion, protocolPath);
 
         if (serverVersion.equals(BedrockProtocolVersion.bedrockLatest)) {
             final ChannelConfig config = channel.config();

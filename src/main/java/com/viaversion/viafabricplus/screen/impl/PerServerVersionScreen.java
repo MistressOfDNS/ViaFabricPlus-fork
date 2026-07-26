@@ -42,7 +42,7 @@ public final class PerServerVersionScreen extends VFPScreen {
     private final Supplier<ProtocolVersion> selectionSupplier;
 
     public PerServerVersionScreen(final Screen prevScreen, final Consumer<ProtocolVersion> selectionConsumer, final Supplier<ProtocolVersion> selectionSupplier) {
-        super(Component.translatable("screen.viafabricplus.force_version"), false);
+        super(Component.translatable("screen.viafabricplus.force_version"), true);
 
         this.prevScreen = prevScreen;
         this.selectionConsumer = selectionConsumer;
@@ -86,6 +86,7 @@ public final class PerServerVersionScreen extends VFPScreen {
         @Override
         public void mappedMouseClicked(final double mouseX, final double mouseY, final int button) {
             selectionConsumer.accept(null);
+            onClose();
         }
 
         @Override
@@ -111,6 +112,7 @@ public final class PerServerVersionScreen extends VFPScreen {
         @Override
         public void mappedMouseClicked(final double mouseX, final double mouseY, final int button) {
             selectionConsumer.accept(protocolVersion);
+            onClose();
         }
 
         @Override

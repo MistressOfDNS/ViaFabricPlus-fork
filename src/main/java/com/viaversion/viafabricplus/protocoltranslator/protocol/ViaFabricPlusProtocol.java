@@ -121,8 +121,12 @@ public final class ViaFabricPlusProtocol extends AbstractProtocol<ClientboundPac
             return getClientboundItemType(targetVersion);
         } else if (targetVersion.olderThanOrEqualTo(ProtocolVersion.v1_21_5)) {
             return VersionedTypes.V1_21_5.lengthPrefixedItem;
-        } else {
+        } else if (targetVersion.olderThanOrEqualTo(ProtocolVersion.v1_21_11)) {
             return VersionedTypes.V1_21_6.lengthPrefixedItem;
+        } else if (targetVersion.olderThanOrEqualTo(ProtocolVersion.v26_1)) {
+            return VersionedTypes.V26_1.lengthPrefixedItem;
+        } else {
+            return VersionedTypes.V26_2.lengthPrefixedItem;
         }
     }
 
@@ -161,8 +165,12 @@ public final class ViaFabricPlusProtocol extends AbstractProtocol<ClientboundPac
             return VersionedTypes.V1_21_6.item;
         } else if (targetVersion.olderThanOrEqualTo(ProtocolVersion.v1_21_9)) {
             return VersionedTypes.V1_21_9.item;
-        } else {
+        } else if (targetVersion.olderThanOrEqualTo(ProtocolVersion.v1_21_11)) {
             return VersionedTypes.V1_21_11.item;
+        } else if (targetVersion.olderThanOrEqualTo(ProtocolVersion.v26_1)) {
+            return VersionedTypes.V26_1.item;
+        } else {
+            return VersionedTypes.V26_2.item;
         }
     }
 

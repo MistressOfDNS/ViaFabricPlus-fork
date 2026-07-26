@@ -50,10 +50,10 @@ public abstract class MixinJoinMultiplayerScreen extends Screen {
         ProtocolVersion version;
         if (mixinServerInfo.viaFabricPlus$excludedFromViaFabricPlus()) {
             version = ProtocolTranslator.NATIVE_VERSION;
-        } else if (mixinServerInfo.viaFabricPlus$passedDirectConnectScreen()) {
-            version = ProtocolTranslator.getTargetVersion();
-        } else {
+        } else if (mixinServerInfo.viaFabricPlus$forcedVersion() != null) {
             version = mixinServerInfo.viaFabricPlus$forcedVersion();
+        } else {
+            version = ProtocolTranslator.getTargetVersion();
         }
         return original.call(BedrockSettings.replaceDefaultPort(address, version));
     }

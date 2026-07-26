@@ -1,5 +1,5 @@
 # Gradle
-
+.gradle-local/
 .gradle/
 build/
 out/
@@ -34,3 +34,4 @@ DS_Store
 # Misc
 
 run/
+AGENTS.md
